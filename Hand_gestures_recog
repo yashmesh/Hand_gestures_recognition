@@ -1,0 +1,93 @@
+Hand gestures recognition and voice conversion system for dumb people :
+
+#include <LiquidCrystal.h>
+ #include <SPI.h>
+ #include <Wire.h> 
+ #define MPU 0x68  // I2C address of the MPU-6050 
+ const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+int ang,fing;
+String NEW;
+String OLD="AA";
+ double   AcX , AcY , AcZ ; 
+ int   Pitch ,   Roll ; 
+// Connect SDA, SCL to Analog input 4 and 5 respectively
+void   FunctionsMPU ( );
+double   FunctionsPitchRoll ( double   A ,   double   B ,   double   C );                    
+void   init_MPU ( );
+
+ 
+ void   setup ( ) { 
+   Serial . begin ( 9600 ) ; 
+   init_MPU ( ) ;   // Inizializzazione MPU6050 
+ 
+ lcd.begin(16,2);
+ }
+  void   loop ( ) 
+ { 
+  
+
+   FunctionsMPU ( ) ;   // Acquisisco assi AcX, AcY, AcZ. 
+    
+   Roll   =   FunctionsPitchRoll ( AcX ,   AcY ,   AcZ ) ;     //Calcolo angolo Roll 
+   Pitch   =   FunctionsPitchRoll ( AcY ,   AcX ,   AcZ ) ;    //Calcolo angolo Pitch 
+/*Serial.print("Pitch : ");
+ # Serial.print(Pitch);
+ # Serial.print("     Roll : ");
+ # Serial.println(Roll);*/
+    // Finger Inputs
+   int Index=analogRead(A1);
+   int Middle=analogRead(A0);/*
+ # Serial.print("\t\t\t");
+ # Serial.println(Index);
+*/
+   if( -30 < Pitch && Pitch <30 && -30 < Roll && Roll < 30){
+     if(Index<120){
+      NEW = "HELLO";
+     }
+     else if(Middle<120){
+      NEW = "I NEED WATER";
+     }
+   }
+   else if(-30 < Pitch && Pitch <30  && Roll > 30 ){
+    if(Index<120){
+      NEW = "THANK YOU";
+    }
+    else if(Middle < 120){
+      NEW = "I WANT MEDICINE";
+    }
+Python Code:
+import serial
+from playsound import playsound
+ser = serial.Serial('COM3', 9600)
+i = 0
+while i<100:
+    i += 1
+    data = str(ser.readline())
+    data = data[2:]
+    data = data[:-5]
+    print(data)
+    if data == "I NEED WATER":
+        playsound("Ineedwater.mp3")
+    elif data == "HELLO":
+        playsound("Hello.mp3")
+    elif data == "THANK YOU":
+        playsound("Thankyou.mp3")
+    elif data == "I AM HUNGRY":
+        playsound("Iamhungry.mp3")
+    elif data == "HELP ME":
+        playsound("Helpme.mp3")
+    elif data == "I WANT MEDICINE":
+        playsound("Iwantmedicine.mp3")
+    elif data == "WASHROOM":
+        playsound("Washroom.mp3")
+    elif  data == "I AM SORRY":
+        playsound("Iamsorry.mp3")
+
+
+ 
+  
+  
+  
+
